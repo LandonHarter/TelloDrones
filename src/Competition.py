@@ -7,23 +7,20 @@ import threading, socket, sys, time, subprocess
 
 # GLOBAL VARIABLES DECLARED HERE....
 host = ''
-port = 9000
-locaddr = (host,port)
+port = 8889
+locaddr = (host, port)
 tello_address = ('192.168.10.1', 8889) # Get the Tello drone's address
 
-
-
-# Creates a UDP socketd
+# Creates a UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 sock.bind(locaddr)
-
 
 def recv():
     count = 0
     while True:
         try:
-            data, server = sock.recvfrom(1518)
+            data, server = sock.recvfrom(1024)
             print(data.decode(encoding="utf-8"))
         except Exception:
             print ('\n****Keep Eye on Drone****\n')
@@ -40,24 +37,29 @@ def sendmsg(msg, sleep = 6):
 recvThread = threading.Thread(target=recv)
 recvThread.start()
 
-
 # CREATE FUNCTIONS HERE....
 
 def firstHoop():
-    print('First hoop')
+    sendmsg('up 55')
+    sendmsg('forward 185')
 
 def secondHoop():
-    print('Second hoop')
+    sendmsg('go 175 0 35 65', 8)
 
 def thirdHoop():
-    print('Third hoop')
+    sendmsg('curve 100 100 0 30 250 0 60', 10)
+    sendmsg('ccw 180')
+    sendmsg('forward 150')
 
 def fourthHoop():
-    print('Fourth hoop')
+    sendmsg('go 175 0 -45 65', 8)
 
-print("\nTeam: Julian Harter")
+print("\nTeam: Harter & Julian")
 print("Program Name: Hoop Competition")
-print("Date: 11/29/21")
+import datetime
+
+now = datetime.datetime.now()
+print("Date: "+now.strftime("%m-%d-%y %H:%M"))
 print("\n****CHECK YOUR TELLO WIFI ADDRESS****")
 print("\n****CHECK SURROUNDING AREA BEFORE FLIGHT****")
 ready = input('\nAre you ready to take flight: ')
@@ -68,10 +70,18 @@ try:
         print("\nStarting Drone!\n")
 
         sendmsg('command', 0)
-        sendmsg('takeoff')
+        sendmsg('takeoff', 8)
+        sendmsg('mon')
+        sendmsg('mdirection 0')
+        sendmsg('go 180 0 55 65 mid2')
 
         # Review the (SDK) Software Development Kit resource for Drone Commands
         # Delete these comments before writing your program
+
+        #firstHoop()
+        #secondHoop()
+        #thirdHoop()
+        #fourthHoop()
 
         sendmsg('land')
 
